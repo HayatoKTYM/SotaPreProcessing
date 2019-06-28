@@ -22,9 +22,6 @@ from glob import glob
 utterance_labels = ["None", "Passive", "Active", "Nod"]
 target_labels = ["A", "B"]
 
-
-
-
 class EventLog(object):
 
     def __init__(self, filename):
@@ -60,49 +57,46 @@ class EventLog(object):
         return dataframe.as_matrix().tolist()
 
 def main():
-    directory = glob('/Users/hayato/Desktop/0131/1*')
-    #print(directory)
+    directory = glob('/Volumes/IWSDS2019/WOZRawData/07*')
 
-    for num in directory:
-        #number = glob(i+"/*")
-        #print(number)
-        #for num in number:
-        #setting_file = glob(num+"/*a.txt")[0]
-        act_file = glob(num+"/*[!A].csv")[0]
-        eventlog = EventLog(act_file)
-        tk = TimeKeeper(act_file)
+    for i in directory:
+        number = glob(i+"/*")
+        for num in number:
+            act_file = glob(num+"/*[!A].csv")[0]
+            eventlog = EventLog(act_file)
+            tk = TimeKeeper(act_file)
 
-        fo = open("/Users/hayato/Desktop/0131/decode/{}.label.csv".format(tk.recording_datetime), "w")
-        print("A,B", file=fo)
-        f_genenrator = FrameGenerator(tk.start_time, tk.end_time,frame_rate=100)
+            fo = open("/Volumes/IWSDS2019/WOZData/decode/{}.decode.csv".format(tk.recording_datetime), "w")
+            print("A,B", file=fo)
+            f_genenrator = FrameGenerator(tk.start_time, tk.end_time,frame_rate=100)
 
-        target = "A"
-        action = ""
-        utterance_ = ""
-        lkcount = 0
-        flag = 0
-        event_list = eventlog.data.as_matrix().tolist()
-        for f_time in f_genenrator:#フレーム単位ごとに
-            log_time = set_time(event_list[0][0])#logにあるイベント
+            target = "A"
+            action = ""
+            utterance_ = ""
+            lkcount = 0
+            flag = 0
+            event_list = eventlog.data.as_matrix().tolist()
+            for f_time in f_genenrator:#フレーム単位ごとに
+                log_time = set_time(event_list[0][0])#logにあるイベント
 
-            if f_time >= log_time:
+                if f_time >= log_time:
 
-                event = event_list.pop(0)
-                if event[1] == "SpReco":
-                    person = {"A":1,"B":2}
-                    utterance_ = event[4]#[0].encode('utf-8')
+                    event = event_list.pop(0)
+                    if event[1] == "SpReco":
+                        person = {"A":1,"B":2}
+                        utterance_ = event[4]#[0].encode('utf-8')
 
-                    if person[event[3][0]] == 1:
-                        print("{},{}".format(utterance_,"0"), file=fo)
+                        if person[event[3][0]] == 1:
+                            print("{},{}".format(utterance_,"0"), file=fo)
+                        else:
+                            print("{},{}".format("0",utterance_), file=fo)
                     else:
-                        print("{},{}".format("0",utterance_), file=fo)
+                        print("{},{}".format('0',"0"), file=fo)
+
                 else:
                     print("{},{}".format('0',"0"), file=fo)
 
-            else:
-                print("{},{}".format('0',"0"), file=fo)
-
-        fo.close()
+            fo.close()
 
 if __name__ == '__main__':
     # EL = EventLog("data/20170731_1.csv")

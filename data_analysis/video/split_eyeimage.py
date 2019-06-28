@@ -1,7 +1,7 @@
 __author__ = "Hayato Katayama"
 __date__    = "20190304"
 
-import cv2, os
+import cv2, os, glob
 import subprocess
 import openface
 import numpy as np
@@ -39,7 +39,7 @@ def split_png(file):
     @param movie path
     return save path
     """
-    folder = "/Users/hayato/Desktop/img/" + file.split("/")[-1].split(".")[0]
+    folder = "/Volumes/IWSDS2019/WOZData/img/" + file.split("/")[-1].split(".")[0]
     if not os.path.exists(folder):
         os.mkdir(folder)
 
@@ -68,8 +68,7 @@ def getRep(imgPath):
         raise Exception("Unable to load image: {}".format(imgPath))
     rgbImg = cv2.cvtColor(bgrImg, cv2.COLOR_BGR2RGB)
     bb = align.getLargestFaceBoundingBox(rgbImg)
-    
-    # if no face -> return black image
+
     if bb is None:
         return black_face, black_eye
 
@@ -85,3 +84,8 @@ def getRep(imgPath):
     hist_eq = cv2.equalizeHist(gray_image)  # ヒストグラム平坦化
     eye_image = hist_eq[:32, :]
     return hist_eq, eye_image
+
+if __name__ == '__main__':
+    files = glob.glob('/Volumes/IWSDS2019/WOZData/mp4/*')
+    for file in files:
+        split_eyeimage(file)

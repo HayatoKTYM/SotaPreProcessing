@@ -6,9 +6,7 @@ pcm -> wav
 
 import subprocess
 import sys
-
 sys.path.append('../')
-
 from util.time_keeper import TimeKeeper
 
 from glob import glob
@@ -24,14 +22,16 @@ ch2spkr = {"ch1": "A", "ch2": "B"}
 def split_pcm(input_file, output_file, start, duration):
     cmd = "sox -r {} -c {} -b {} -e signed-integer -t raw {} {} trim {} {}".format(
         SAMPLING_RATE, CH, BITS, input_file, output_file, start, duration)
+    print(cmd)
     try:
         res = subprocess.run(cmd, shell=True)
-    except:
+    except Exception as e:
+        #print(e)
         print("Runtime Error.")
 
 
 if __name__ == '__main__':
-    directory = glob('/Users/hayato/Desktop/013*')
+    directory = glob('/Volumes/IWSDS2019/WOZRawData/06*')
     for i in directory:
         number = glob(i + "/*")
         for num in number:
@@ -43,8 +43,8 @@ if __name__ == '__main__':
 
             TK = TimeKeeper(act_file)
             wav_start = TK.get_diff_sound(vad_file)
-            out_file = "" + TK.recording_datetime + ".A" + ".wav"
+            out_file = "/Volumes/IWSDS2019/WOZData/wav/" + TK.recording_datetime + ".A" + ".wav"
             split_pcm(pcm_a, out_file, wav_start, TK.duration_sec)
-            out_file = "" + TK.recording_datetime + ".B" + ".wav"
+            out_file = "/Volumes/IWSDS2019/WOZData/wav/" + TK.recording_datetime + ".B" + ".wav"
             split_pcm(pcm_b, out_file, wav_start, TK.duration_sec)
             print("Genetared >> ", out_file)

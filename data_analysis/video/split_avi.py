@@ -8,15 +8,16 @@ AVI形式の動画ファイルを指定された開始時刻と
 __author__ = "Hayato Katayama"
 __date__    = "20190304"
 
+import subprocess
+import sys
+import logging
+import glob
 
 sys.path.append('..')
 
 from util.time_keeper import TimeKeeper
 
-import subprocess
-import sys
-import logging
-import glob
+
 
 
 def split_video(INPUT="", OUTPUT="", START="0.0", DURATION="0.0"):
@@ -29,7 +30,7 @@ def split_video(INPUT="", OUTPUT="", START="0.0", DURATION="0.0"):
 
 
 if __name__ == '__main__':
-    folders = glob.glob('/Users/hayato/Desktop/013*')
+    folders = glob.glob('/Volumes/IWSDS2019/WOZRawData/07*')
     print(folders)
     for dir in folders:
         files = glob.glob(dir + '/*')
@@ -40,7 +41,7 @@ if __name__ == '__main__':
             TK = TimeKeeper(act_file)
             movie_start = TK.get_diff_movie(movie_file)
 
-            output_file = "./" + TK.recording_datetime + ".mp4"
+            output_file = "/Volumes/IWSDS2019/WOZData/mp4/" + TK.recording_datetime + ".mp4"
             split_video(INPUT=movie_file, OUTPUT=output_file, START=str(movie_start), DURATION=str(TK.duration_sec))
 
             print("Output >> {}".format(output_file))
