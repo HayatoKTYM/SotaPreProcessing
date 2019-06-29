@@ -52,72 +52,65 @@ class ActLog(object):
         return dataframe.as_matrix().tolist()
 
 if __name__ == '__main__':
-    directory = glob('/Users/hayato/Desktop/0131/1*')
-    #print(len(dir))
+    directory = glob('/Volumes/Untitled/WOZRawData/0*')
+    for i in directory:
+        number = glob(i+"/*")
+        for num in number:
+            act_file = glob(num+"/*[!A].csv")[0]
+            file_a = glob(num+"/000*")
+            vad_file = file_a[0]+"/vad.txt"
 
-    #print(directory)
-    for num in directory:
-        #number = glob(i+"/*")
-        #print(number[0])
-        #for num in number:
-        #setting_file = glob(num+"/*a.txt")[0]
-        act_file = glob(num+"/*[!A].csv")[0]
+            TK = TimeKeeper(act_file)
 
-        file_a = glob(num+"/000*")
-        vad_file = file_a[0]+"/vad.txt"
+            act_log = ActLog(act_file)
+            robot_event_list = act_log.to_list(act_log.data)
 
-        TK = TimeKeeper(act_file)
+            spkr_event_list = []
+            with open(vad_file, "r") as f:
+                for line in f:
+                    spkr_event_list.append(line.rstrip().split(' '))
 
-        act_log = ActLog(act_file)
-        robot_event_list = act_log.to_list(act_log.data)
+            fo = open("/Volumes/Untitled/WOZData/vad"+"/{}.vad.csv".format(TK.recording_datetime), "w")
+            print("{},{},{}".format('utter_R', 'utter_A', 'utter_B'), file=fo)
 
-        spkr_event_list = []
-        with open(vad_file, "r") as f:
-            for line in f:
-                spkr_event_list.append(line.rstrip().split(' '))
+            # 初期化
+            robot_utter = "0"
+            A_utter = "0"
+            B_utter = "0"
+            utterance = ""
 
-        fo = open("/Users/hayato/Desktop/0131/vad"+"/{}.vad.csv".format(TK.recording_datetime), "w")
-        print("{},{},{}".format('utter_R', 'utter_A', 'utter_B'), file=fo)
+            # イテレータを生成
+            f_generator = FrameGenerator(TK.start_time , TK.end_time)
 
-        # 初期化
-        robot_utter = "0"
-        A_utter = "0"
-        B_utter = "0"
-        utterance = ""
-
-        # イテレータを生成
-        f_generator = FrameGenerator(TK.start_time , TK.end_time)
-
-        for f_time in f_generator:
-            # ロボットの発話区間の最新状態を更新
-            while set_time(robot_event_list[0][0]) <= f_time :
-                event =  robot_event_list.pop(0)
-                if event[1] != "SpeakEnd":
-                    robot_utter = "1"
-                    utterance = event[4]
-                else:
-                    robot_utter = "0"
-                    utterance = ""
-
-            # 人間の発話区間の最新状態を更新
-
-            while set_time(spkr_event_list[0][0]) <= f_time :
-                event =  spkr_event_list.pop(0)
-                if event[1] == "1":
-                    if event[2] == "ON":
-                        A_utter = "1"
+            for f_time in f_generator:
+                # ロボットの発話区間の最新状態を更新
+                while set_time(robot_event_list[0][0]) <= f_time :
+                    event =  robot_event_list.pop(0)
+                    if event[1] != "SpeakEnd":
+                        robot_utter = "1"
+                        utterance = event[4]
                     else:
-                        A_utter = "0"
-                elif event[1] == "2":
-                    if event[2] == "ON":
-                        B_utter = "1"
-                    else:
-                        B_utter = "0"
+                        robot_utter = "0"
+                        utterance = ""
+
+                # 人間の発話区間の最新状態を更新
+
+                while set_time(spkr_event_list[0][0]) <= f_time :
+                    event =  spkr_event_list.pop(0)
+                    if event[1] == "1":
+                        if event[2] == "ON":
+                            A_utter = "1"
+                        else:
+                            A_utter = "0"
+                    elif event[1] == "2":
+                        if event[2] == "ON":
+                            B_utter = "1"
+                        else:
+                            B_utter = "0"
 
 
-            print("{},{},{}".format(robot_utter, A_utter, B_utter), file=fo)
+                print("{},{},{}".format(robot_utter, A_utter, B_utter), file=fo)
 
-        fo.close()
-        print("Generated >> ..")
+            fo.close()
+            print("Generated >> ..")
     print("finished!")
-

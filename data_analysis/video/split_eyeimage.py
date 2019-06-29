@@ -39,7 +39,7 @@ def split_png(file):
     @param movie path
     return save path
     """
-    folder = "/Volumes/IWSDS2019/WOZData/img/" + file.split("/")[-1].split(".")[0]
+    folder = "/Volumes/Untitled/WOZData/img/" + file.split("/")[-1].split(".")[0]
     if not os.path.exists(folder):
         os.mkdir(folder)
 
@@ -86,6 +86,6 @@ def getRep(imgPath):
     return hist_eq, eye_image
 
 if __name__ == '__main__':
-    files = glob.glob('/Volumes/IWSDS2019/WOZData/mp4/*')
+    files = sorted(glob.glob('/Volumes/Untitled/WOZData/mp4/20171201*'))
     for file in files:
         split_eyeimage(file)

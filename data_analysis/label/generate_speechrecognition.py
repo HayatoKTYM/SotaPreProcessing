@@ -57,7 +57,7 @@ class EventLog(object):
         return dataframe.as_matrix().tolist()
 
 def main():
-    directory = glob('/Volumes/IWSDS2019/WOZRawData/07*')
+    directory = glob('/Volumes/Untitled/WOZRawData/06*')
 
     for i in directory:
         number = glob(i+"/*")
@@ -66,7 +66,7 @@ def main():
             eventlog = EventLog(act_file)
             tk = TimeKeeper(act_file)
 
-            fo = open("/Volumes/IWSDS2019/WOZData/decode/{}.decode.csv".format(tk.recording_datetime), "w")
+            fo = open("/Volumes/Untitled/WOZData/decode/{}.decode.csv".format(tk.recording_datetime), "w")
             print("A,B", file=fo)
             f_genenrator = FrameGenerator(tk.start_time, tk.end_time,frame_rate=100)
 

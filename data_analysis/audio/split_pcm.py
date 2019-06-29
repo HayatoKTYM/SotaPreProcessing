@@ -31,7 +31,7 @@ def split_pcm(input_file, output_file, start, duration):
 
 
 if __name__ == '__main__':
-    directory = glob('/Volumes/IWSDS2019/WOZRawData/06*')
+    directory = glob('/Volumes/Untitled/WOZRawData/1202*')
     for i in directory:
         number = glob(i + "/*")
         for num in number:
@@ -43,8 +43,8 @@ if __name__ == '__main__':
 
             TK = TimeKeeper(act_file)
             wav_start = TK.get_diff_sound(vad_file)
-            out_file = "/Volumes/IWSDS2019/WOZData/wav/" + TK.recording_datetime + ".A" + ".wav"
+            out_file = "/Volumes/Untitled/WOZData/wav/" + TK.recording_datetime + ".A" + ".wav"
             split_pcm(pcm_a, out_file, wav_start, TK.duration_sec)
-            out_file = "/Volumes/IWSDS2019/WOZData/wav/" + TK.recording_datetime + ".B" + ".wav"
+            out_file = "/Volumes/Untitled/WOZData/wav/" + TK.recording_datetime + ".B" + ".wav"
             split_pcm(pcm_b, out_file, wav_start, TK.duration_sec)
             print("Genetared >> ", out_file)

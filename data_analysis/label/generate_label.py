@@ -86,7 +86,7 @@ class EventLog(object):
 
 def main():
     #f = open("decode.txt","w")
-    directory = sorted(glob('/Volumes/IWSDS2019/WOZRawData/07*'))
+    directory = sorted(glob('/Volumes/Untitled/WOZRawData/06*'))
     print(directory)
     for dir in directory:
         files = glob(dir + '/*')
@@ -96,7 +96,7 @@ def main():
             tk = TimeKeeper(act_file)
             output_file = act_file.split("/")[-1].split('.')[0]
 
-            fo = open("/Volumes/IWSDS2019/WOZData/label/{}.label.csv".format(tk.recording_datetime), "w")
+            fo = open("/Volumes/Untitled/WOZData/label/{}.label.csv".format(tk.recording_datetime), "w")
             print("action,target,U", file=fo)
             f_genenrator = FrameGenerator(tk.start_time, tk.end_time,frame_rate=100)
 
