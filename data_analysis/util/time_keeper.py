@@ -91,11 +91,11 @@ class TimeKeeper:
 
 #確認用
 if __name__ == '__main__':
-    TK = TimeKeeper(act_file='/Users/hayato/Desktop/00000106/201901312021.csv')
+    TK = TimeKeeper(act_file='/Volumes/Untitled/WOZRawData/0703/03/201907031506.csv')
     print(TK.start_time)
     print(TK.end_time)
     print(TK.duration_sec)
-    wav_start = TK.get_diff_sound('/Users/hayato/Desktop/00000106/vad.txt')
+    wav_start = TK.get_diff_sound('/Volumes/Untitled/WOZRawData/0703/03/00000124/vad.txt')
     print(wav_start)
-    movie_start = TK.get_diff_movie('/Users/hayato/Desktop/00000106/2019_01_31_20_17_42_325203.avi')
+    movie_start = TK.get_diff_movie('/Volumes/Untitled/WOZRawData/0710/03/2018_07_10_19_42_09_484071.avi')
     print(movie_start)

@@ -86,7 +86,7 @@ class EventLog(object):
 
 def main():
     #f = open("decode.txt","w")
-    directory = sorted(glob('/Volumes/Untitled/WOZRawData/06*'))
+    directory = sorted(glob('/mnt/aoni02/katayama/dataset/RawDATA/*'))
     print(directory)
     for dir in directory:
         files = glob(dir + '/*')

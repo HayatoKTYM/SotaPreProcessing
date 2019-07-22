@@ -23,7 +23,7 @@ def predict_gaze(INPUT_FILES):
 
 
 if __name__ == '__main__':
-    folders = glob.glob('/Volumes/Untitled/WOZData/eye/*')
+    folders = glob.glob('/Volumes/Untitled/WOZData/eye/2018*')
     print(folders)
     for dir in folders:
         files = sorted(glob.glob(dir + '/*png'))[:]

@@ -46,16 +46,16 @@ class ActLog(object):
                 self.end_time = set_time(v['time'])
                 break
 
-        return self.raw_data[self.start_row:self.end_row+1].loc[(self.raw_data.utterance!="NONE")].loc[(self.raw_data.action!='SpReco')]
+        return self.raw_data[self.start_row:self.end_row+1].loc[(self.raw_data.utterance!="NONE")].loc[(self.raw_data.action!="SpReco")]
 
     def to_list(self, dataframe):
         return dataframe.as_matrix().tolist()
 
 if __name__ == '__main__':
-    directory = glob('/mnt/aoni02/katayama/dataset/RawDATA/*')
-    for i in directory:
-        number = glob(i+"/*")
-        for num in number:
+    for i in range(1):
+        number = glob('/Users/hayato/Desktop/0131/1'+"/*")
+        for num in [1]:
+            num = '/Users/hayato/Desktop/0131/1'
             act_file = glob(num+"/*[!A].csv")[0]
             file_a = glob(num+"/000*")
             vad_file = file_a[0]+"/vad.txt"
@@ -64,13 +64,13 @@ if __name__ == '__main__':
 
             act_log = ActLog(act_file)
             robot_event_list = act_log.to_list(act_log.data)
-
+            print(robot_event_list)
             spkr_event_list = []
             with open(vad_file, "r") as f:
                 for line in f:
                     spkr_event_list.append(line.rstrip().split(' '))
 
-            fo = open("/Volumes/Untitled/WOZData/vad"+"/{}.vad.csv".format(TK.recording_datetime), "w")
+            fo = open("."+"/{}.vad.csv".format(TK.recording_datetime), "w")
             print("{},{},{}".format('utter_R', 'utter_A', 'utter_B'), file=fo)
 
             # 初期化
@@ -114,3 +114,4 @@ if __name__ == '__main__':
             fo.close()
             print("Generated >> ..")
     print("finished!")
+

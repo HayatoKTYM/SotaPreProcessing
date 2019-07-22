@@ -21,7 +21,7 @@ def concat_feature(lf, df, vf, gf):
     #print(0,len(df_label))
     df = pd.concat([df_label, df_decode, df_vad, df_gaze],axis=1)
     #print(1,len(df))
-    df = df.dropna()
+    df = df.fillna(0)
     #print(2,len(df))
     return df
 
@@ -37,10 +37,10 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    label_files = sorted(glob.glob(args.datadir + '/label/20171202*.csv'))
-    decode_files = sorted(glob.glob(args.datadir + '/decode/20171202*.csv'))
-    vad_files = sorted(glob.glob(args.datadir + '/vad/20171202*.csv'))
-    gaze_files = sorted(glob.glob(args.datadir + '/gaze/20171202*.csv'))
+    label_files = sorted(glob.glob(args.datadir + '/label/20190*.csv'))
+    decode_files = sorted(glob.glob(args.datadir + '/decode/20190*.csv'))
+    vad_files = sorted(glob.glob(args.datadir + '/vad/20190*.csv'))
+    gaze_files = sorted(glob.glob(args.datadir + '/gaze/20190*.csv'))
 
 
     for lf, df, vf, gf in zip(label_files, decode_files, vad_files, gaze_files):

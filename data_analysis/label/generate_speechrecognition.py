@@ -57,7 +57,7 @@ class EventLog(object):
         return dataframe.as_matrix().tolist()
 
 def main():
-    directory = glob('/Volumes/Untitled/WOZRawData/06*')
+    directory = glob('/mnt/aoni02/katayama/dataset/RawDATA/*')
 
     for i in directory:
         number = glob(i+"/*")

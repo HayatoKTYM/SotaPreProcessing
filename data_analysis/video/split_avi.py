@@ -30,7 +30,7 @@ def split_video(INPUT="", OUTPUT="", START="0.0", DURATION="0.0"):
 
 
 if __name__ == '__main__':
-    folders = sorted(glob.glob('/Volumes/Untitled/WOZRawData/06*'))
+    folders = sorted(glob.glob('/mnt/aoni02/katayama/dataset/RawDATA/*'))
     print(folders)
     for dir in folders:
         files = sorted(glob.glob(dir + '/*'))

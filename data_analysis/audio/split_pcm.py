@@ -31,7 +31,7 @@ def split_pcm(input_file, output_file, start, duration):
 
 
 if __name__ == '__main__':
-    directory = glob('/Volumes/Untitled/WOZRawData/1202*')
+    directory = glob('/mnt/aoni02/katayama/dataset/RawDATA/*')
     for i in directory:
         number = glob(i + "/*")
         for num in number:
