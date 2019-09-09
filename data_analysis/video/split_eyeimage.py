@@ -1,3 +1,6 @@
+#!/usr/bin/python3
+# -*- coding: utf-8 -*-
+
 __author__ = "Hayato Katayama"
 __date__    = "20190304"
 
@@ -5,8 +8,9 @@ import cv2, os, glob
 import subprocess
 import openface
 import numpy as np
+import argparse
 
-def split_eyeimage(movie_file):
+def split_eyeimage(movie_file,align):
     """
     動画を読み込んで画像を切り出す(一応保存)
     画像から顔を検出して切り出す(一応保存)
@@ -28,7 +32,7 @@ def split_eyeimage(movie_file):
     if not os.path.exists(path):
         os.mkdir(path)
     for file in glob.glob(folder + '/*png'):
-        face, eye = getRep(file)
+        face, eye = getRep(file,align=align)
         cv2.imwrite(file.replace('img', 'face'), face)
         cv2.imwrite(file.replace('img', 'eye'), eye)
 
@@ -48,17 +52,10 @@ def split_png(file):
     print(command)
     return folder
 
-
-modelDir = os.path.join('/Users/hayato/openface/models')
-dlibModelDir = os.path.join(modelDir, 'dlib')
-openfaceModelDir = os.path.join(modelDir, 'openface')
-align = openface.AlignDlib(os.path.join(dlibModelDir, "shape_predictor_68_face_landmarks.dat"))
-
 black_face = np.zeros(96 * 96).reshape(96, 96, 1)
 black_eye = np.zeros(32 * 96).reshape(32, 96, 1)
 
-
-def getRep(imgPath):
+def getRep(imgPath,align):
     """
     @param path
     return face image & eye image
@@ -86,6 +83,23 @@ def getRep(imgPath):
     return hist_eq, eye_image
 
 if __name__ == '__main__':
-    files = sorted(glob.glob('/Volumes/Untitled/WOZData/mp4/20171201*'))
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--dir', '-d', type=str, default='/mnt/aoni02/katayama/dataset/DATA2019/mp4/*mp4',
+                        help='specify the mp4 folder PATH')
+    parser.add_argument('--model', '-m', type=str, default='/mnt/aoni02/katayama/openface/models',
+                        help='specify the openface model PATH')
+    # parser.add_argument('--out', '-o', type=str, default='/mnt/aoni02/katayama/dataset/DATA2019/decode/',
+    #                    help='specify the label output folder PATH')
+
+    print('Extaction Folder : {}'.format(args.dir))
+    # print('Output Folder : {}'.format(args.out))
+    directory = glob(args.dir)
+
+    modelDir = os.path.join(args.model)
+    dlibModelDir = os.path.join(modelDir, 'dlib')
+    openfaceModelDir = os.path.join(modelDir, 'openface')
+    align = openface.AlignDlib(os.path.join(dlibModelDir, "shape_predictor_68_face_landmarks.dat"))
+
+    files = sorted(glob.glob(directory))
     for file in files:
-        split_eyeimage(file)
+        split_eyeimage(file,align=align)

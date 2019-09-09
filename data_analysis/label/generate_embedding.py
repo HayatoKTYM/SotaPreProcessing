@@ -1,3 +1,6 @@
+#!/usr/bin/python3
+# -*- coding: utf-8 -*-
+
 __author__ = 'Hayato Katayama'
 __date__ = '20190630'
 """
@@ -12,7 +15,7 @@ import MeCab
 import numpy as np
 from glob import glob
 import pandas as pd
-mThings = MeCab.Tagger('Ochasen')
+mThings = MeCab.Tagger('-Ochasen')
 mThings.parse('')
 import json, pickle
 
@@ -23,7 +26,7 @@ def wakati(sentences):
     return: [私,は,学生,です]
     """
     texts = []
-    m = MeCab.Tagger("-Ochasen")
+    m = MeCab.Tagger("-d /usr/local/lib/mecab/dic/mecab-ipadic-neologd")
     for sentence in sentences:
         word_list = list()
         words_chasen = m.parse(sentence).split('\n')
@@ -66,8 +69,20 @@ def save_EmbeddingMetrix(embedding_metrix, INPUT=''):
     f.close()
 
 if __name__ == '__main__':
-    label_files = sorted(glob('/Volumes/Untitled/WOZData/decode/*csv'))
-    print(label_files)
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--dir', '-d', type=str, default='/mnt/aoni02/katayama/dataset/DATA2019/decode/*csv',
+                        help='specify the conversaton folder PATH')
+    parser.add_argument('--model', '-m', type=str, default='/mnt/aoni02/katayama/model.vec',
+                        help='specify the word2vec model PATH')
+    #parser.add_argument('--out', '-o', type=str, default='/mnt/aoni02/katayama/dataset/DATA2019/decode/',
+    #                    help='specify the label output folder PATH')
+
+    print('Extaction Folder : {}'.format(args.dir))
+    #print('Output Folder : {}'.format(args.out))
+    directory = glob(args.dir)
+    #output = args.out
+
+    label_files = sorted(glob(directory))
     sentences = list()
     for lf in label_files:
         df = pd.read_csv(lf)
@@ -79,7 +94,7 @@ if __name__ == '__main__':
 
     #学習済み分散表現モデルの読み込み
     import gensim
-    model = gensim.models.KeyedVectors.load_word2vec_format('/Users/hayato/Desktop/model.vec', binary=False)
+    model = gensim.models.KeyedVectors.load_word2vec_format(args.model, binary=False)
     from keras.preprocessing.text import Tokenizer
     from keras.preprocessing.sequence import pad_sequences
     tokenizer = Tokenizer()

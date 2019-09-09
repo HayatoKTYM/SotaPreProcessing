@@ -1,5 +1,5 @@
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
-
 """
 AVI形式の動画ファイルを指定された開始時刻と
 動画の時間を基に切り出して吐き出す
@@ -12,7 +12,7 @@ import subprocess
 import sys
 import logging
 import glob
-
+import argparse
 sys.path.append('..')
 
 from util.time_keeper import TimeKeeper
@@ -30,8 +30,18 @@ def split_video(INPUT="", OUTPUT="", START="0.0", DURATION="0.0"):
 
 
 if __name__ == '__main__':
-    folders = sorted(glob.glob('/mnt/aoni02/katayama/dataset/RawDATA/*'))
-    print(folders)
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--dir', '-d', type=str, default='/mnt/aoni02/katayama/dataset/RawDATA/*',
+                        help='specify the conversaton folder PATH')
+    parser.add_argument('--out', '-o', type=str, default='/mnt/aoni02/katayama/dataset/DATA2019/mp4/',
+                        help='specify the label output folder PATH')
+
+    print('Extaction Folder : {}'.format(args.dir))
+    print('Output Folder : {}'.format(args.out))
+    directory = glob(args.dir)
+    output = args.out
+
+    folders = sorted(glob.glob(directory))
     for dir in folders:
         files = sorted(glob.glob(dir + '/*'))
         for file in files:
@@ -41,7 +51,7 @@ if __name__ == '__main__':
             TK = TimeKeeper(act_file)
             movie_start = TK.get_diff_movie(movie_file)
 
-            output_file = "/Volumes/Untitled/WOZData/mp4/" + TK.recording_datetime + ".mp4"
+            output_file = output + TK.recording_datetime + ".mp4"
             split_video(INPUT=movie_file, OUTPUT=output_file, START=str(movie_start), DURATION=str(TK.duration_sec))
 
             print("Output >> {}".format(output_file))

@@ -1,9 +1,12 @@
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
 import numpy as np
 import wave
-import sys
-
+import sys,time
+import cv2
+import argparse
+from glob import glob
 import warnings
 warnings.filterwarnings('ignore', category=FutureWarning)
 
@@ -38,17 +41,20 @@ class Generator:
         while len(chunk) >= self.frame_size:
             chunk = chunk * self.win
             chunk = np.hstack ([chunk, np.zeros((self.chunk_size-self.frame_size))])
-            #print(chunk.shape)
             if chunk.shape[0] != self.chunk_size:
                 break
             else:
                 # normalized, windowed frequencies in data chunk
                 spec = np.fft.rfft(chunk) / self.chunk_size
                 # get magnitude
-                psd = abs(spec)
+                psd = abs(spec) + 1e-40
                 # convert to dB scale
+                #print(np.shape(psd))
+                #psd = np.array(psd) + 0.00001
                 psd = 20 * np.log10(psd)
-
+                psd[psd == -np.inf] = 0
+                psd[psd == np.inf] = 0
+                #else: psd = 0 * np.array(psd)
                 psd = np.asarray([psd])
 
                 if img_array == []:
@@ -59,7 +65,6 @@ class Generator:
                 else:
                     img_array = np.r_[img_array, psd]
 
-                    #print(img_array.shape)
 
             frame_start = frame_start + self.frame_shift
             frame_end = frame_end + self.frame_shift
@@ -83,82 +88,31 @@ class Generator:
 
         self.fromNumData(num_data)
 
-class Continuous_Generator:
-    # 連続的に波形が入ってくることを想定
-    # 無駄にfft計算しないようにする
-    def __init__(self, fs, frame_size, frame_shift, chunk_size, input_size, output_size):
-        self.fs = fs
-        self.frame_size = frame_size
-        self.frame_shift = frame_shift
-        self.chunk_size = chunk_size
-        self.win = np.hanning(frame_size)
-        self.img_array = np.asarray([])
-        self.grayscale = []
-        self.start_frame = None
-        self.end_frame = None
 
-        self.input_size = input_size
-        self.output_size = output_size
-        self.stack = np.asarray([]) # 大きさ frame_size + input_sizeの配列
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--dir', '-d', type=str, default='/mnt/aoni02/katayama/dataset/DATA2019/wav/*wav',
+                        help='specify the conversaton folder PATH')
+    parser.add_argument('--out', '-o', type=str, default='/mnt/aoni02/katayama/dataset/DATA2019/spectrogram/',
+                        help='specify the label output folder PATH')
 
-        if input_size % frame_shift != 0:
-            sys.stderr.write("Change the values for input_size divisible by frame_shift\n")
-            sys.exit(1)
+    print('Extaction Folder : {}'.format(args.dir))
+    print('Output Folder : {}'.format(args.out))
+    directory = glob(args.dir)
+    output = args.out
+    files = sorted(glob(directory))
 
-    def __call__(self, num_data):
-
-        if self.stack.shape[0] < self.frame_size:
-            self.stack = np.hstack([self.stack, num_data])
-
-
-            if self.stack.shape[0] == self.frame_size:
-                psd = self.get_psd(self.stack)
-                self.img_array = psd
-            elif self.stack.shape[0] > self.frame_size:
-                # frame_size, input_size, output_sizeの整合性が取れてない場合のやつ。いらないかも
-                psd = self.get_psd(self.stack[:self.frame_size])
-                self.img_array = psd
-            else:
-                print('wait')
-
-
-        elif self.stack.shape[0] >= self.frame_size:
-            self.stack = np.hstack([self.stack[self.frame_shift:], num_data])
-
-            start_frame = 0
-            end_frame = self.frame_size
-            chunk = self.stack[start_frame : end_frame]
-            for i in range(self.input_size / self.frame_shift):
-                psd = self.get_psd(chunk)
-                self.img_array = np.r_[self.img_array, psd]
-
-                start_frame = start_frame + self.frame_shift
-                end_frame = end_frame + self.frame_shift
-
-            print(self.img_array.shape)
-            if self.img_array.shape[0] < self.output_size:
-                return None
-
-            elif self.img_array.shape[0] == self.output_size:
-                return self.img_array
-
-            elif self.img_array.shape[0] > self.output_size:
-                self.img_array = self.img_array[(-1 * self.output_size) : ]
-
-                return self.img_array
+    for i in range(0,len(files),2):
+        start = time.time()
+        output = output + files[i].split('/')[-1].split('.')[0]
+        g = Generator(16000,800,160,1024)
+        g.fromFilePath(files[i])
+        cv2.imwrite(output+"_A.png",g.grayscale)
+        g = Generator(16000,800,160,1024)
+        g.fromFilePath(files[i+1])
+        cv2.imwrite(output+"_B.png",g.grayscale)
+        print('It took about',time.time()-start,'seconds')
+        print("Generated >>",output)
 
 
 
-    def get_psd(self, chunk):
-        chunk = chunk * self.win
-        chunk = np.hstack ([chunk, np.zeros((self.chunk_size-self.frame_size))])
-
-        # normalized, windowed frequencies in data chunk
-        spec = np.fft.rfft(chunk) / self.chunk_size
-        # get magnitude
-        psd = abs(spec)
-        # convert to dB scale
-        psd = 20 * np.log10(psd)
-        psd = np.asarray([psd])
-
-        return psd

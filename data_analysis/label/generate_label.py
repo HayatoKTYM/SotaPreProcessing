@@ -1,3 +1,4 @@
+#!/usr/bin/python
 # -*- coding: utf-8 -*-
 from __future__ import print_function
 """
@@ -8,9 +9,9 @@ __date__    = "20190304"
 
 import pandas as pd
 from datetime import timedelta
+import argparse
 import sys,time
 sys.path.append("..")
-
 from util.frame_generator import FrameGenerator
 from util.time_keeper import *
 from util.file_reader import FileReader
@@ -85,9 +86,17 @@ class EventLog(object):
         return dataframe.as_matrix().tolist()
 
 def main():
-    #f = open("decode.txt","w")
-    directory = sorted(glob('/mnt/aoni02/katayama/dataset/RawDATA/*'))
-    print(directory)
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--dir', '-d', type=str, default='/mnt/aoni02/katayama/dataset/RawDATA/*',
+                        help='specify the conversaton folder PATH')
+    parser.add_argument('--out', '-o', type=str, default='/mnt/aoni02/katayama/dataset/DATA2019/label/',
+                        help='specify the label output folder PATH')
+
+    print('Extaction Folder : {}'.format(args.dir))
+    print('Output Folder : {}'.format(args.out))
+    directory = glob(args.dir)
+    output = args.out
+
     for dir in directory:
         files = glob(dir + '/*')
         for num in files:
@@ -96,7 +105,7 @@ def main():
             tk = TimeKeeper(act_file)
             output_file = act_file.split("/")[-1].split('.')[0]
 
-            fo = open("/Volumes/Untitled/WOZData/label/{}.label.csv".format(tk.recording_datetime), "w")
+            fo = open(output + "{}.label.csv".format(tk.recording_datetime), "w")
             print("action,target,U", file=fo)
             f_genenrator = FrameGenerator(tk.start_time, tk.end_time,frame_rate=100)
 
@@ -152,5 +161,4 @@ def main():
                     flag = 0
             fo.close()
 if __name__ == '__main__':
-    # EL = EventLog("data/20170731_1.csv")
     main()

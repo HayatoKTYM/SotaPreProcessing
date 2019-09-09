@@ -2,12 +2,14 @@
 # -*- coding: utf-8 -*-
 """
 ユーザA,Bの音声認識結果を抽出するスクリプト
-何も発話していない部分は0 で埋めている
+ID,contentの２列
+IDはどのユーザの発話かを一意に決めるもの，contentは発話内容
+新しい発話が入ってくるまで前の発話で埋めている
 """
 from __future__ import print_function
 
 __author__ = "Hayato Katayama"
-__date__    = "20190304"
+__date__    = "20190907"
 
 import pandas as pd
 from datetime import timedelta
@@ -61,14 +63,13 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--dir', '-d', type=str, default='/mnt/aoni02/katayama/dataset/RawDATA/*',
                         help='specify the conversaton folder PATH')
-    parser.add_argument('--out', '-o', type=str, default='/mnt/aoni02/katayama/dataset/DATA2019/decode/',
+    parser.add_argument('--out', '-o', type=str, default='/mnt/aoni02/katayama/dataset/DATA2019/decode_new/',
                         help='specify the label output folder PATH')
 
     print('Extaction Folder : {}'.format(args.dir))
     print('Output Folder : {}'.format(args.out))
     directory = glob(args.dir)
     output = args.out
-
 
     for i in directory:
         number = glob(i+"/*")
@@ -78,35 +79,33 @@ def main():
             tk = TimeKeeper(act_file)
 
             fo = open(output + "{}.decode.csv".format(tk.recording_datetime), "w")
-            print("A,B", file=fo)
+            print("pre_ID,ID,pre_content,content", file=fo)
             f_genenrator = FrameGenerator(tk.start_time, tk.end_time,frame_rate=100)
 
             target = "A"
             action = ""
-            utterance_ = ""
+            utterance_ = pre_utter = "0"
+            ID = pre_ID = 0
             lkcount = 0
-            flag = 0
             event_list = eventlog.data.as_matrix().tolist()
             for f_time in f_genenrator:#フレーム単位ごとに
                 log_time = set_time(event_list[0][0])#logにあるイベント
 
                 if f_time >= log_time:
-
                     event = event_list.pop(0)
                     if event[1] == "SpReco":
+                        pre_utter = utterance_
+                        pre_ID = ID
                         person = {"A":1,"B":2}
+                        ID = person[event[3][0]]
                         utterance_ = event[4]#[0].encode('utf-8')
-
-                        if person[event[3][0]] == 1:
-                            print("{},{}".format(utterance_,"0"), file=fo)
-                        else:
-                            print("{},{}".format("0",utterance_), file=fo)
+                        print("{},{},{},{}".format(pre_ID,ID,pre_utter,utterance_), file=fo)
                     else:
-                        print("{},{}".format('0',"0"), file=fo)
+                        print("{},{},{},{}".format(pre_ID,ID,pre_utter,utterance_), file=fo)
 
                 else:
-                    print("{},{}".format('0',"0"), file=fo)
-
+                    print("{},{},{},{}".format(pre_ID,ID,pre_utter,utterance_), file=fo)
+                
             fo.close()
 
 if __name__ == '__main__':

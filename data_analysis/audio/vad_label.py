@@ -1,10 +1,11 @@
+#!/usr/bin/python
 # -*- coding: utf-8 -*-
 from __future__ import print_function
 import sys
 import pandas as pd
+import argparse
 
 sys.path.append("..")
-
 from util.frame_generator import FrameGenerator
 from util.time_keeper import TimeKeeper, set_time
 from util.file_reader import FileReader
@@ -52,7 +53,17 @@ class ActLog(object):
         return dataframe.as_matrix().tolist()
 
 if __name__ == '__main__':
-    directory = glob('/mnt/aoni02/katayama/dataset/RawDATA/*')
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--dir', '-d', type=str, default='/mnt/aoni02/katayama/dataset/RawDATA/*',
+                        help='specify the conversaton folder PATH')
+    parser.add_argument('--out', '-o', type=str, default='/mnt/aoni02/katayama/dataset/DATA2019/vad/',
+                        help='specify the LLD output folder PATH')
+
+    print('Extaction Folder : {}'.format(args.dir))
+    print('Output Folder : {}'.format(args.out))
+    directory = glob(args.dir)
+    output = args.out
+
     for i in directory:
         number = glob(i+"/*")
         for num in number:
@@ -70,7 +81,7 @@ if __name__ == '__main__':
                 for line in f:
                     spkr_event_list.append(line.rstrip().split(' '))
 
-            fo = open("/Volumes/Untitled/WOZData/vad"+"/{}.vad.csv".format(TK.recording_datetime), "w")
+            fo = open(output+"{}.vad.csv".format(TK.recording_datetime), "w")
             print("{},{},{}".format('utter_R', 'utter_A', 'utter_B'), file=fo)
 
             # 初期化
