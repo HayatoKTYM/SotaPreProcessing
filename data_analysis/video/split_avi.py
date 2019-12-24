@@ -24,7 +24,8 @@ def split_video(INPUT="", OUTPUT="", START="0.0", DURATION="0.0"):
     if INPUT == "" or OUTPUT == "" or DURATION == "0.0":
         logging.exception("*** Cutting the video :: Argument setting incorrect ***")
     else:
-        command = "ffmpeg -ss " + START + " -i " + INPUT + " -t " + DURATION + " -r 10 -c:v copy " + OUTPUT
+        command = "ffmpeg -ss " + START + " -i " + INPUT + " -t " + DURATION + " " + OUTPUT
+        #command = "ffmpeg -ss " + START + " -i " + INPUT + " -t " + DURATION + " -r 10 -c:v copy " + OUTPUT
         print("Command >> {}".format(command))
         subprocess.run(command, shell=True)
 
@@ -35,10 +36,10 @@ if __name__ == '__main__':
                         help='specify the conversaton folder PATH')
     parser.add_argument('--out', '-o', type=str, default='/mnt/aoni02/katayama/dataset/DATA2019/mp4/',
                         help='specify the label output folder PATH')
-
+    args = parser.parse_args()
     print('Extaction Folder : {}'.format(args.dir))
     print('Output Folder : {}'.format(args.out))
-    directory = glob(args.dir)
+    directory = args.dir
     output = args.out
 
     folders = sorted(glob.glob(directory))

@@ -29,7 +29,7 @@ DialogAct = {
     "no"                : "Passive",
     "unknown"           : "Passive", #change(Other)
     "pardon"            : "Passive", #change(Other)
-    "followup"          : "Active",
+    #"followup"          : "Active",
     "start"          : "Active",
     "summarize"      : "Active",
     "nod"            : "Nod",
@@ -87,14 +87,14 @@ class EventLog(object):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--dir', '-d', type=str, default='/mnt/aoni02/katayama/dataset/RawDATA/*',
+    parser.add_argument('--dir', '-d', type=str, default='/mnt/aoni02/katayama/dataset/DATA2019/',
                         help='specify the conversaton folder PATH')
     parser.add_argument('--out', '-o', type=str, default='/mnt/aoni02/katayama/dataset/DATA2019/label/',
                         help='specify the label output folder PATH')
-
+    args = parser.parse_args()
     print('Extaction Folder : {}'.format(args.dir))
     print('Output Folder : {}'.format(args.out))
-    directory = glob(args.dir)
+    directory = glob(args.dir+'*')
     output = args.out
 
     for dir in directory:
@@ -106,7 +106,7 @@ def main():
             output_file = act_file.split("/")[-1].split('.')[0]
 
             fo = open(output + "{}.label.csv".format(tk.recording_datetime), "w")
-            print("action,target,U", file=fo)
+            print("action,action_detail,target,U", file=fo)
             f_genenrator = FrameGenerator(tk.start_time, tk.end_time,frame_rate=100)
 
             target = "A"
@@ -155,10 +155,12 @@ def main():
                     utter_label = 0
                     flag = 0
 
-                print("{},{},{}".format(act_label, target,utter_label), file=fo)
-
                 if action == "SpeakEnd":
                     flag = 0
+                    action = None
+                print("{},{},{},{}".format(act_label, action, target,utter_label), file=fo)
+
+
             fo.close()
 if __name__ == '__main__':
     main()

@@ -37,7 +37,7 @@ if __name__ == '__main__':
                         help='specify the conversation folder PATH')
     parser.add_argument('--out', '-o', type=str, default='/mnt/aoni02/katayama/dataset/DATA2019/wav/',
                         help='specify the output folder PATH')
-
+    args = parser.parse_args()
     print('Extaction Folder : {}'.format(args.dir))
     print('Output Folder : {}'.format(args.out))
     directory = glob(args.dir)

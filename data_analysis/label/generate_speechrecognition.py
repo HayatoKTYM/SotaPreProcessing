@@ -63,7 +63,7 @@ def main():
                         help='specify the conversaton folder PATH')
     parser.add_argument('--out', '-o', type=str, default='/mnt/aoni02/katayama/dataset/DATA2019/decode/',
                         help='specify the label output folder PATH')
-
+    args = parser.parse_args()
     print('Extaction Folder : {}'.format(args.dir))
     print('Output Folder : {}'.format(args.out))
     directory = glob(args.dir)

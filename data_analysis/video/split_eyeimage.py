@@ -44,6 +44,7 @@ def split_png(file):
     return save path
     """
     folder = "/Volumes/Untitled/WOZData/img/" + file.split("/")[-1].split(".")[0]
+    folder = "/Users/hayato/Desktop/ssh-server/dataset/DATA2019/img/" + file.split("/")[-1].split(".")[0]
     if not os.path.exists(folder):
         os.mkdir(folder)
 
@@ -90,16 +91,16 @@ if __name__ == '__main__':
                         help='specify the openface model PATH')
     # parser.add_argument('--out', '-o', type=str, default='/mnt/aoni02/katayama/dataset/DATA2019/decode/',
     #                    help='specify the label output folder PATH')
-
+    args = parser.parse_args()
     print('Extaction Folder : {}'.format(args.dir))
     # print('Output Folder : {}'.format(args.out))
-    directory = glob(args.dir)
+    directory = args.dir  
 
     modelDir = os.path.join(args.model)
     dlibModelDir = os.path.join(modelDir, 'dlib')
     openfaceModelDir = os.path.join(modelDir, 'openface')
     align = openface.AlignDlib(os.path.join(dlibModelDir, "shape_predictor_68_face_landmarks.dat"))
 
-    files = sorted(glob.glob(directory))
+    files = sorted(glob.glob(directory+'2019120517*'))
     for file in files:
         split_eyeimage(file,align=align)

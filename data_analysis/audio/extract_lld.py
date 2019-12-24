@@ -48,7 +48,7 @@ if __name__ == '__main__':
                         help='specify the wav folder PATH')
     parser.add_argument('--out', '-o', type=str, default='/mnt/aoni02/katayama/dataset/DATA2019/LLD/*csv',
                         help='specify the LLD output folder PATH')
-
+    args = parser.parse_args()
     print('Extaction Folder : {}'.format(args.dir))
     print('Output Folder : {}'.format(args.out))
     directory = glob(args.dir)
