@@ -20,21 +20,17 @@ def concat_feature(lf, df, vf, gf):
     assert len(df_label) == len(df_decode), print('cannot concat files.')
     #print(0,len(df_label))
     df = pd.concat([df_label, df_decode, df_vad, df_gaze],axis=1)
-    #print(1,len(df))
     df = df.fillna(0)
-    #print(2,len(df))
     return df
 
 if __name__ == '__main__':
     parser = ArgumentParser()
-
     parser.add_argument("-d", "--datadir", type=str, metavar="DIRECTORY", required=False, default='/Volumes/Untitled/WOZData',
                         help="data directory")
     parser.add_argument("-o", "--outdir", type=str, metavar="DIRECTORY", required=False,
                         help="output directory", default="/Volumes/Untitled/WOZData/feature")
     parser.add_argument("--debug", required=False,
                         help="is debug", action='store_true')
-
     args = parser.parse_args()
 
     label_files = sorted(glob.glob(args.datadir + '/label/20190*.csv'))
