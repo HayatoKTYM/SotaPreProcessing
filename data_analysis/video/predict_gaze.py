@@ -29,9 +29,10 @@ if __name__ == '__main__':
     parser.add_argument('--model', '-m', type=str,
                         default='/mnt/aoni02/katayama/short_project/proken2018_B/target/gazemodel_128.h5',
                         help='specify the gaze model PATH')
+    args = parser.parse_args()
     print('Extaction Folder : {}'.format(args.dir))
-    directory = glob(args.dir)
-    folders = glob.glob(directory)
+    directory = args.dir
+    folders = glob.glob(directory+'201912*')
 
     model = keras.models.load_model(args.model)
     for dir in folders:
@@ -39,8 +40,8 @@ if __name__ == '__main__':
         label = predict_gaze(files,model=model)
         df = pd.DataFrame({'path': files, 'gaze': label})
         path = dir.replace('eye', 'gaze')
-        if not os.path.exists(path):
-            os.mkdir(path)
+        #if not os.path.exists(path):
+        #    os.mkdir(path)
         OUTPUT = path + '.gaze.csv'
         df.to_csv(OUTPUT, index=False)
         print('Generated>>',OUTPUT)

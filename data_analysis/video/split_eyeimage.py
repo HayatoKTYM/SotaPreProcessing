@@ -101,6 +101,6 @@ if __name__ == '__main__':
     openfaceModelDir = os.path.join(modelDir, 'openface')
     align = openface.AlignDlib(os.path.join(dlibModelDir, "shape_predictor_68_face_landmarks.dat"))
 
-    files = sorted(glob.glob(directory+'2019120517*'))
+    files = sorted(glob.glob(directory+'2019121214*'))
     for file in files:
         split_eyeimage(file,align=align)
